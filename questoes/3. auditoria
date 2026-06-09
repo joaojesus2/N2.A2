@@ -1,3 +1,9 @@
+CREATE OR REPLACE TABLE auditoria(
+	data_operacao TIMESTAMP,
+	nome_entidade VARCHAR(30),
+	tipo_operacao VARCHAR(6)
+)
+
 CREATE OR REPLACE FUNCTION fu_auditoria()
 RETURNS TRIGGER AS $$
 BEGIN
