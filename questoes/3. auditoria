@@ -1,0 +1,51 @@
+CREATE OR REPLACE FUNCTION fu_auditoria()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO auditoria (
+        data_operacao,
+        nome_entidade,
+        tipo_operacao
+    )
+    VALUES (
+        NOW(),
+        TG_TABLE_NAME,
+        TG_OP
+    );
+
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
+    ELSE
+        RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER tg_auditoria_usuario
+AFTER INSERT OR UPDATE OR DELETE
+ON usuario
+FOR EACH ROW
+EXECUTE FUNCTION fu_auditoria();
+
+CREATE TRIGGER tg_auditoria_grupo
+AFTER INSERT OR UPDATE OR DELETE
+ON grupo
+FOR EACH ROW
+EXECUTE FUNCTION fu_auditoria();
+
+CREATE TRIGGER tg_auditoria_papel
+AFTER INSERT OR UPDATE OR DELETE
+ON papel
+FOR EACH ROW
+EXECUTE FUNCTION fu_auditoria();
+
+CREATE TRIGGER tg_auditoria_usuario_papel
+AFTER INSERT OR UPDATE OR DELETE
+ON usuario_papel
+FOR EACH ROW
+EXECUTE FUNCTION fu_auditoria();
+
+CREATE TRIGGER tg_auditoria_usuario_grupo
+AFTER INSERT OR UPDATE OR DELETE
+ON usuario_grupo
+FOR EACH ROW
+EXECUTE FUNCTION fu_auditoria();
